@@ -14,7 +14,9 @@ class TareaController
 
     if (!$proyectoId) header('Location: /dashboard');
 
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     $proyecto = Proyecto::where('url', $proyectoId);
 
     if (!$proyecto || $proyecto->propietarioId !== $_SESSION['id']) header('Location: /404');
@@ -25,9 +27,11 @@ class TareaController
 
   public static function crear()
   {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-      session_start();
 
       $proyectoId = $_POST['proyectoId'];
 
@@ -59,10 +63,12 @@ class TareaController
 
   public static function actualizar()
   {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // Validar que el proyecto exista
       $proyecto = Proyecto::where('url', $_POST['proyectoId']);
-      session_start();
 
       if (!$proyecto || $proyecto->propietarioId !== $_SESSION['id']) {
         $respuesta = [
@@ -92,10 +98,13 @@ class TareaController
 
   public static function eliminar()
   {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // Validar que el proyecto exista
       $proyecto = Proyecto::where('url', $_POST['proyectoId']);
-      session_start();
+
 
       if (!$proyecto || $proyecto->propietarioId !== $_SESSION['id']) {
         $respuesta = [
@@ -111,11 +120,11 @@ class TareaController
 
       $resultado = [
         'resultado' => $resultado,
-        'mensaje' => 'Eliminado Correctamente', 
+        'mensaje' => 'Eliminado Correctamente',
         'tipo' => 'exito'
       ];
 
-      echo json_encode( $resultado);
+      echo json_encode($resultado);
     }
   }
 }

@@ -11,7 +11,9 @@ class DashboardController
 
   public static function index(Router $router)
   {
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     isAuth();
 
     $id = $_SESSION['id'];
@@ -25,7 +27,9 @@ class DashboardController
 
   public static function crear_proyecto(Router $router)
   {
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
 
     isAuth();
 
@@ -61,7 +65,9 @@ class DashboardController
 
   public static function proyecto(Router $router)
   {
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     isAuth();
 
     $token = $_GET['id'];
@@ -80,7 +86,9 @@ class DashboardController
 
   public static function perfil(Router $router)
   {
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
 
     isAuth();
     $alertas = [];
@@ -94,22 +102,20 @@ class DashboardController
       if (empty($alertas)) {
         $existeUsuario = Usuario::where('email', $usuario->email);
 
-        if($existeUsuario && $existeUsuario->id !== $usuario->id) {
+        if ($existeUsuario && $existeUsuario->id !== $usuario->id) {
           // Mensaje de error
           Usuario::setAlerta('error', 'Email No Válido');
           $alertas = $usuario->getAlertas();
-          
         } else {
           // Guardar el registro
           // Guardar el usuario
           $usuario->guardar();
-  
+
           Usuario::setAlerta('exito', 'Guardado Correctamente');
           $alertas = $usuario->getAlertas();
-  
+
           $_SESSION['nombre'] = $usuario->nombre;
         }
-        
       }
     }
 
@@ -123,11 +129,13 @@ class DashboardController
 
   public static function cambiar_password(Router $router)
   {
-    session_start();
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     isAuth();
     $alertas = [];
 
-    if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $usuario = Usuario::find($_SESSION['id']);
 
       // Sincronizar con los datos del usuario
@@ -135,10 +143,10 @@ class DashboardController
 
       $alertas = $usuario->nuevo_password();
 
-      if(empty($alertas)) {
+      if (empty($alertas)) {
         $resultado = $usuario->comprobar_password();
 
-        if($resultado) {
+        if ($resultado) {
           $usuario->password = $usuario->password_nuevo;
 
 
@@ -151,18 +159,17 @@ class DashboardController
 
           // Actualizar
           $resultado = $usuario->guardar();
-          if($resultado) {
-          Usuario::setAlerta('exito', 'Contraseña Guardada correctamente');
-          $alertas = $usuario->getAlertas();
+          if ($resultado) {
+            Usuario::setAlerta('exito', 'Contraseña Guardada correctamente');
+            $alertas = $usuario->getAlertas();
           }
-
         } else {
           Usuario::setAlerta('error', 'Contraseña Incorrecta');
           $alertas = $usuario->getAlertas();
         }
       }
     }
-    
+
     $router->render('dashboard/cambiar-password', [
       'titulo' => 'Cambiar contraseña',
       'alertas' => $alertas
