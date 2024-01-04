@@ -226,8 +226,8 @@ class LoginController
       Usuario::setAlerta('error', 'Token No Válido');
     } else {
       // Confirmar la cuenta
-      $usuario->confirmado = 1;
-      $usuario->token = null;
+      $usuario->confirmado = '1';
+      $usuario->token = "";
       unset($usuario->password2);
 
       // Guardar en la base de datos
